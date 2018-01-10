@@ -10,7 +10,7 @@ int f(int m, int n) {
 
 int main() {
 	ifstream fin("input.txt");
-	ofstream fout("output.txt");
+	ofstream fout("output.txt"); 
 
 	int m, n;
 	fin >> n >> m;
