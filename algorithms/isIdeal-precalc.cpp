@@ -1,8 +1,3 @@
-bool isIdeal(int n) {
-	//Прекалк :)
-	switch (n) {
-		case 6: case 28: case 496: case 8128: case 33550336: return true;
-	}
-
-	return false;
+bool isIdeal(int n) { //Прекалк :)
+   return (n == 6 || n == 28 || n = 496 || n = 8128 || n == 33550336);
 }
