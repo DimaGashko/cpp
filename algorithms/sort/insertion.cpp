@@ -36,7 +36,7 @@ int main() {
 void sort(int *arr, int n) {
 	for (int i = 1; i < n; i++) {
 		for (int j = i; j >= 1; j--) {
-			if (arr[j] >= arr[j - 1]) continue;
+			if (arr[j] >= arr[j - 1]) break;
 
 			int tmp = arr[j];
 			arr[j] = arr[j - 1];
