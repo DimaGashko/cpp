@@ -30,6 +30,8 @@ int main() {
 
 	fin.close();
 	fout.close();
+
+	delete[] arr;
 	return 0;
 }
 
