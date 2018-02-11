@@ -1,4 +1,4 @@
-//select sort (выбором)
+//quick sort
 
 #include <iostream>
 #include <fstream>
@@ -10,7 +10,8 @@ using namespace std;
 void writeArr(int *arr, int len);
 void printArr(int *arr, int len, ofstream &fout, char sep = ' ');
 
-void sort(int *arr, int n);
+void quickSort(int *arr, int l, int r);
+void quickSort(int *arr, int n);
 
 int main() {
 	ifstream fin("input.txt");
@@ -21,11 +22,12 @@ int main() {
 	fin >> len;
 
 	int *arr = new int[len];
-	
+
 	writeArr(arr, len);
 	//printArr(arr, len, fout, '\n');
 
-	sort(arr, len);
+	quickSort(arr, len);
+	
 	printArr(arr, len, fout, '\n');
 
 	fin.close();
@@ -35,21 +37,29 @@ int main() {
 	return 0;
 }
 
-void sort(int *arr, int n) {
-	for (int i = 0; i < n; i++) {
+void quickSort(int *arr, int l, int r) {
+	int i = l, j = r, middle = arr[(i + j) / 2];
 
-		int iMin = i;
-		for (int j = i; j < n; j++) {
-			if (arr[j] < arr[iMin]) iMin = j;
-		}
+	do {
+		while (middle > arr[i]) i++;
+		while (middle < arr[j]) j--;
 
-		if (arr[i] != arr[iMin]) {
+		if (i <= j) {
 			int tmp = arr[i];
-			arr[i] = arr[iMin];
-			arr[iMin] = tmp;
-		}
-	}
+			arr[i] = arr[j];
+			arr[j] = tmp;
 
+			i++; j--;
+		}
+
+	} while (i < j);
+
+	if (i < r) quickSort(arr, i, r);
+	if (j > l) quickSort(arr, l, j);
+}
+
+void quickSort(int *arr, int n) {
+	quickSort(arr, 0, n - 1);
 }
 
 void writeArr(int *arr, int len) {
