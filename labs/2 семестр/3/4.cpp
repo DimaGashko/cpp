@@ -13,15 +13,14 @@ void printArr(int **arr, int k, int l, ofstream &fout);
 
 void removeArr(int **arr, int k, int l);
 bool inFillArea(int k, int i, int j);
+void quickSort(int *arr, int l, int r);
 
-int getElement(int **matr, int l, int index);
-void swapElement(int **matr, int l, int i, int j);
-void quickSort(int **arr, int k, int m, int l, int r);
+void sortByTask(int **matr, int k, int l);
 
 int main() {
 	ifstream fin("input.txt");
 	ofstream fout("output.txt");
-	//srand(time(0));
+	srand(time(0));
 
 	int k, l;
 	fin >> k;
@@ -32,7 +31,7 @@ int main() {
 	int **matr = getArr(k, l);
 	writeArr(matr, k, l);
 
-	quickSort(matr, k, l, 0, k*l - 1);
+	sortByTask(matr, k, l);
 
 	fout << endl << "Была сгенерирована матрица: " << endl;
 	printArr(matr, k, l, fout);
@@ -44,43 +43,48 @@ int main() {
 	return 0;
 }
 
-int getElement(int **matr, int l, int index) {
-	return matr[index / l][index % l];
+void sortByTask(int **matr, int k, int l) {
+	//Определение цифр, что находятся в fillArea
+	int *nums = new int[k * l / 2 + k];
+	int cur = 0;
+
+	for (int i = 0; i < k; i++) {
+		for (int j = 0; j < l; j++) {
+			if (inFillArea(k, i, j)) nums[cur++] = matr[i][j];
+		}
+	}
+
+	quickSort(nums, 0, cur - 1);
+	
+	//Замена чисел отсортироваными
+	for (int i = 0, cur = 0; i < k; i++) {
+		for (int j = 0; j < l; j++) {
+			if (inFillArea(k, i, j)) matr[i][j] = nums[cur++];
+		}
+	}
+
+	delete[] nums;
 }
 
-void swapElement(int **matr, int l, int i, int j) {
-	int tmp = matr[i / l][i % l];
-	matr[i / l][i % l] = matr[j / l][j % l];
-	matr[j / l][j % l] = tmp;
-}
-
-void quickSort(int **arr, int k, int m, int l, int r) {
-	int i = l, j = r, middle = getElement(arr, m, (i + j) / 2);
+void quickSort(int *arr, int l, int r) {
+	int i = l, j = r, middle = arr[(i + j) / 2];
 
 	do {
-		while (middle < getElement(arr, m, i)) i++;
-		while (middle > getElement(arr, m, j)) j--;
-
-		//while (i < j && (!inFillArea(k, i/m, i%m) || middle < getElement(arr, m, i))) i++;
-		//while (i < j && (!inFillArea(k, j/m, j%m) || middle > getElement(arr, m, j))) j--;
-
-		//while (i < j && (arr[i/m][i%m] == 5 || middle < getElement(arr, m, i))) i++;
-		//while (i < j && (arr[j/m][j%m] == 5 || middle > getElement(arr, m, j))) j--;
+		while (middle < arr[i]) i++;
+		while (middle > arr[j]) j--;
 
 		if (i <= j) {
-			swapElement(arr, m, i, j);
+			int tmp = arr[i];
+			arr[i] = arr[j];
+			arr[j] = tmp;
+
 			i++; j--;
 		}
 
 	} while (i < j);
 
-	if (i < r) quickSort(arr, k, m, i, r);
-	if (j > l) quickSort(arr, k, m, l, j);
-}
-
-bool inFillArea(int k, int i, int j) {
-	return (i <= j && k - i - 1 >= j)
-		|| (i >= j && k - i - 1 <= j);
+	if (i < r) quickSort(arr, i, r);
+	if (j > l) quickSort(arr, l, j);
 }
 
 //Заполняет двумерный массив размером k x l случайными числами
@@ -99,6 +103,11 @@ void writeArr(int **arr, int k, int l) {
 
 }
 
+bool inFillArea(int k, int i, int j) {
+	return (i <= j && k - i - 1 >= j)
+		|| (i >= j && k - i - 1 <= j);
+}
+
 //Выводит двумерный массив в файнл
 void printArr(int **arr, int k, int l, ofstream &fout) {
 	for (int i = 0; i < k; i++) {
@@ -112,14 +121,6 @@ void printArr(int **arr, int k, int l, ofstream &fout) {
 	fout << endl;
 }
 
-void removeArr(int **arr, int k, int l) {
-	for (int i = 0; i < k; i++) {
-		delete[] arr[i];
-	}
-
-	delete[] arr;
-}
-
 //Cоздает и возвращает двумерный массив размером k x l 
 //Массив изначально заполняется нулями
 int** getArr(int k, int l) {
@@ -130,4 +131,12 @@ int** getArr(int k, int l) {
 	}
 
 	return arr;
+}
+
+void removeArr(int **arr, int k, int l) {
+	for (int i = 0; i < k; i++) {
+		delete[] arr[i];
+	}
+
+	delete[] arr;
 }
