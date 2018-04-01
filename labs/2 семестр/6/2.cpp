@@ -75,6 +75,11 @@ void clearConsole() {
 	printCommand();
 }
 
+/**
+ * Вводит данные из файла в country
+ * Возвращает true - если удалось испешно
+ * @param{country *&item} - country, в которую нужно записать данные
+*/
 bool enterCountryFromFile(country *&item, ifstream &fin) {
 	item = new country;
 
@@ -86,6 +91,10 @@ bool enterCountryFromFile(country *&item, ifstream &fin) {
 	);
 }
 
+/**
+ * Считывает странны из файла, и возвращает указатель на список указателей на странны
+ * @param {string} adressDB - пусть к файлу со странами
+*/
 List<country*>* getCountriesFromFile(string adressDB) {
 	ifstream fin(adressDB);
 	List<country*> *countries = getList<country*>();
@@ -157,6 +166,7 @@ int main() {
 	return 0;
 }
 
+//Выводит в консоль список команд
 void printCommand() {
 	cout << "Выберите команду: " << endl
 		<< "1. Добавить запись в файл" << endl
@@ -168,6 +178,16 @@ void printCommand() {
 		<< "0. Выход" << endl << endl;
 }
 
+
+/**
+ * Запрашивает от пользователя значение нужного типа
+ * @param{char[]} label - текст, предложенный пользователю
+ *
+ * Привет работы:
+ * prompt<int>("Введите целое число: ");
+ * prompt<char>("Введите символ: ");
+ * prompt<string>("Введите строку: ");
+*/
 template <typename T>
 T prompt(const char label[]) { 
 	cout << label;
