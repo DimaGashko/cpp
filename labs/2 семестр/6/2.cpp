@@ -115,6 +115,31 @@ bool enterCountryFromFile(country *&item, ifstream &fin) {
 		);
 }
 
+//Вставляет элемент списка в список 
+//После первого элемента, что меньше этого
+//(елси для добавления использовать только 
+//эту функцию, то элементы будут отсортированы)
+void insertSortToList(List<country*> *countries, country *next) {
+	countries->push(next);
+
+	/*ListItem<country*> *cur = countries->head;			
+
+	if (cur->next) {
+		while (cur) {
+			cout << (cur->val) << endl;
+			if ((next->name) > (cur->val->name)) {
+				countries->insertAfter(cur, next);
+				break;
+			}
+
+			cur = cur->next;
+		}
+	}
+	else {
+		countries->push(next);
+	}*/		
+}
+
 /**
 * Считывает странны из файла, и возвращает указатель на список указателей на странны
 * @param {string} adressDB - пусть к файлу со странами
@@ -126,7 +151,7 @@ List<country*>* getCountriesFromFile(string adressDB) {
 	country *next = NULL;
 
 	while (enterCountryFromFile(next, fin)) {
-		countries->push(next);
+		insertSortToList(countries, next);
 	}
 
 	fin.close();
@@ -194,6 +219,38 @@ void printCommand() {
 		<< endl
 		<< "5. Очистить экран" << endl
 		<< "0. Выход" << endl << endl;
+}
+
+
+/**
+* Запрашивает от пользователя значение нужного типа
+* @param{char[]} label - текст, предложенный пользователю
+*
+* Привет работы:
+* prompt<int>("Введите целое число: ");
+* prompt<char>("Введите символ: ");
+* prompt<string>("Введите строку: ");
+*/
+template <typename T>
+T prompt(const char label[]) {
+	cout << label;
+
+	while (true) {
+		T val;
+		cin >> val;
+
+		if (cin.fail()) {
+			cin.clear();
+			cin.ignore(32767, '\n');
+			cout << "Произошла ошибка. Введите еще раз: ";
+		}
+		else {
+			cin.ignore(32767, '\n');
+			return val;
+		}
+
+	}
+
 }
 
 
