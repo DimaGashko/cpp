@@ -20,6 +20,14 @@ struct List {
 		end->val = n;
 	}
 
+	void insertAfter(ListItem<T> *item, T n) {
+		ListItem<T> *added = new ListItem<T>;
+		added->val = n;
+
+		added->next = item->next;
+		item->next = added;
+	};
+
 	ListItem<T>* first() {
 		return head->next;
 	}
@@ -45,14 +53,18 @@ int main() {
 	  
 	for (int i = 1; i <= 10; i++) {
 		list->add(i * 10);
-		cout << list->end->val << endl;
+		cout << list->end->val << " ";
 	}
-	 
+	cout << endl;
+
+	list->insertAfter(list->first()->next->next->next->next, 55);
+
 	ListItem<int> *cur = list->first();
 	while (cur) {
-		cout << cur->val << endl;
+		cout << cur->val << " ";
 		cur = cur->next;
 	}
+	cout << endl;
 
 	system("pause");
 	return 0;
