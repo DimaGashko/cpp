@@ -1,44 +1,59 @@
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <windows.h>
 
 using namespace std;
 
+template <typename T>
 struct ListItem {
-	int val = NULL;
+	T val = NULL;
 	ListItem *next = NULL;
 };
 
+template<typename T>
 struct List {
-	ListItem *head, *end;
+	ListItem<T> *head, *end;
 
-	void add(int n) {
+	void add(T n) {
+		end = end->next = new ListItem<T>;
 		end->val = n;
-		end = end->next = new ListItem;		
 	}
 
-	void init() {
-		(head = new ListItem)->next = (end = new ListItem);
+	ListItem<T>* first() {
+		return head->next;
+	}
+
+	List* init() {
+		end = (head = new ListItem<T>);
+		head->next = end;
+
+		return this;
 	}
 };
+
+template<typename T>
+List<T>* getList() {
+	return (new List<T>)->init();
+}
 
 int main() {
 	SetConsoleCP(1251);
 	SetConsoleOutputCP(1251);
-	 
-	List *list = new List;
-	list->init();
-
+	
+	List<int> *list = getList<int>();
+	  
 	for (int i = 1; i <= 10; i++) {
 		list->add(i * 10);
-	}
-
-	ListItem *cur = list->head->next; 
-	while (cur->next) {
-		cout << cur->val << endl;
-		cur = cur->next; 
+		cout << list->end->val << endl;
 	}
 	 
+	ListItem<int> *cur = list->first();
+	while (cur) {
+		cout << cur->val << endl;
+		cur = cur->next;
+	}
+
 	system("pause");
 	return 0;
 }
