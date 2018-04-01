@@ -5,31 +5,50 @@
 
 using namespace std;
 
+//Эллемент однонаправленного списка
 template <typename T>
 struct ListItem {
 	T val = NULL;
 	ListItem *next = NULL;
 };
 
+//Однонаправленный список
 template<typename T>
 struct List {
 	ListItem<T> *head, *end;
 
-	void add(T n) {
-		end->val = n;
+	//Добавляет элемента в конец списка
+	void push(T n) {
 		end = end->next = new ListItem<T>;
+		end->val = n;
 	}
 
+	//Добавляет элемент после указанного элемента
+	void insertAfter(ListItem<T> *item, T n) {
+		ListItem<T> *added = new ListItem<T>;
+		added->val = n;
+
+		added->next = item->next;
+		item->next = added;
+	};
+
+	//Возвращает ссылку на первый реальный элемент
 	ListItem<T>* first() {
 		return head->next;
 	}
 
+	//Иницилизирует список
 	List* init() {
-		(head = new ListItem<T>)->next = (end = new ListItem<T>);
+		end = (head = new ListItem<T>);
+		head->next = end;
+
 		return this;
 	}
 };
 
+//Возвращает однонаправленный список
+//Пример исопльзования:
+//List<int> *list = getList<int>();
 template<typename T>
 List<T>* getList() {
 	return (new List<T>)->init();
@@ -54,12 +73,17 @@ T prompt(const char label[] = "Введите значение: ");
 
 void printCommand();
 
-void add() { 
+void add() {
 	cout << "add\n";
 }
 
-void printAll() {
-	cout << "print\n";
+void printAll(List<country*>* countries) {
+	ListItem<country*> *cur = countries->first();
+
+	while (cur) {
+		cout << (cur->val->toString());
+		cur = cur->next;
+	}
 }
 
 void printByPopul() {
@@ -76,33 +100,33 @@ void clearConsole() {
 }
 
 /**
- * Вводит данные из файла в country
- * Возвращает true - если удалось испешно
- * @param{country *&item} - country, в которую нужно записать данные
+* Вводит данные из файла в country
+* Возвращает true - если удалось испешно
+* @param{country *&item} - country, в которую нужно записать данные
 */
 bool enterCountryFromFile(country *&item, ifstream &fin) {
 	item = new country;
 
 	return !!(
-		fin >> item->name 
-			>> item->capital 
-			>> item->population 
-			>> item->S
-	);
+		fin >> item->name
+		>> item->capital
+		>> item->population
+		>> item->S
+		);
 }
 
 /**
- * Считывает странны из файла, и возвращает указатель на список указателей на странны
- * @param {string} adressDB - пусть к файлу со странами
+* Считывает странны из файла, и возвращает указатель на список указателей на странны
+* @param {string} adressDB - пусть к файлу со странами
 */
 List<country*>* getCountriesFromFile(string adressDB) {
 	ifstream fin(adressDB);
 	List<country*> *countries = getList<country*>();
-	
+
 	country *next = NULL;
 
 	while (enterCountryFromFile(next, fin)) {
-		countries->add(next);
+		countries->push(next);
 	}
 
 	fin.close();
@@ -112,16 +136,10 @@ List<country*>* getCountriesFromFile(string adressDB) {
 int main() {
 	SetConsoleCP(1251);
 	SetConsoleOutputCP(1251);
-	
+
 	string adressDB = "input.txt";
 
-	List<country*> *countryes = getCountriesFromFile(adressDB);
-
-	ListItem<country*> *cur = countryes->first();
-	while (cur->next) {
-		//cout << (cur->val->toString());
-		cur = cur->next;
-	}
+	List<country*> *countries = getCountriesFromFile(adressDB);
 
 	printCommand();
 
@@ -129,13 +147,13 @@ int main() {
 
 	while (true) {
 		switch (prompt<short int>("> ")) {
-		
-		case 1: 
+
+		case 1:
 			add();
 			break;
 
-		case 2: 
-			printAll();
+		case 2:
+			printAll(countries);
 			break;
 
 		case 3:
@@ -146,23 +164,23 @@ int main() {
 			printBySAndPolul();
 			break;
 
-		case 5: 
+		case 5:
 			clearConsole();
 			break;
 
-		case 0: 
+		case 0:
 			exit = true;
-			break; 
+			break;
 
 		default:
 			cout << "Неправильная команда" << endl;
 			break;
 		}
-	
+
 		if (exit) break;
-		cout << endl;	
+		cout << endl;
 	}
-	 
+
 	return 0;
 }
 
@@ -180,16 +198,16 @@ void printCommand() {
 
 
 /**
- * Запрашивает от пользователя значение нужного типа
- * @param{char[]} label - текст, предложенный пользователю
- *
- * Привет работы:
- * prompt<int>("Введите целое число: ");
- * prompt<char>("Введите символ: ");
- * prompt<string>("Введите строку: ");
+* Запрашивает от пользователя значение нужного типа
+* @param{char[]} label - текст, предложенный пользователю
+*
+* Привет работы:
+* prompt<int>("Введите целое число: ");
+* prompt<char>("Введите символ: ");
+* prompt<string>("Введите строку: ");
 */
 template <typename T>
-T prompt(const char label[]) { 
+T prompt(const char label[]) {
 	cout << label;
 
 	while (true) {
@@ -214,104 +232,6 @@ T prompt(const char label[]) {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <windows.h>
-
-using namespace std;
-
-void printLine(char symbol = '-', short count = 20) {
-	for (int i = 0; i < count; i++) {
-		cout << symbol;
-	}
-
-	cout << endl;
-}
-
-
-
-
-int main() {
-	SetConsoleCP(1251);
-	SetConsoleOutputCP(1251);
-
-	const int menuLengh = 6;
-	void(*menu[menuLengh])() = { add, printAll, printSort, printByPopul, printBySAndPolul, clearConsole };
-
-	int command;
-
-	while (1) {
-		command = askCommand();
-		if (command == -1) break;
-
-		if (command < menuLengh) {
-			menu[command]();
-		} 
-		else {
-			cout << "Неправильная команда" << endl;
-		} 
-	}
-
-	return 0;
-}
 
 
 /*#include <iostream>
