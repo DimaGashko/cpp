@@ -5,16 +5,61 @@
 
 using namespace std;
 
-void add() {
+template <typename T>
+struct ListItem {
+	T val = NULL;
+	ListItem *next = NULL;
+};
+
+template<typename T>
+struct List {
+	ListItem<T> *head, *end;
+
+	void add(T n) {
+		end->val = n;
+		end = end->next = new ListItem<T>;
+	}
+
+	ListItem<T>* first() {
+		return head->next;
+	}
+
+	List* init() {
+		(head = new ListItem<T>)->next = (end = new ListItem<T>);
+		return this;
+	}
+};
+
+template<typename T>
+List<T>* getList() {
+	return (new List<T>)->init();
+}
+
+struct country {
+	string name;
+	string capital;
+	long long population;
+	int S;
+
+	string toString() {
+		return name + "("
+			+ "столица: " + capital
+			+ "; население: " + to_string(population)
+			+ "; площадь: " + to_string(S) + " кв. км)\n";
+	}
+};
+
+template <typename T>
+T prompt(const char label[] = "Введите значение: ");
+
+void printCommand();
+
+void add() { 
 	cout << "add\n";
 }
 
 void printAll() {
 	cout << "print\n";
-}
-
-void printSort() {
-	cout << "sort\n";
 }
 
 void printByPopul() {
@@ -27,13 +72,108 @@ void printBySAndPolul() {
 
 void clearConsole() {
 	system("cls");
+	printCommand();
 }
 
-int getNumber(const char label[]) {
+bool enterCountryFromFile(country *&item, ifstream &fin) {
+	item = new country;
+
+	return !!(
+		fin >> item->name 
+			>> item->capital 
+			>> item->population 
+			>> item->S
+	);
+}
+
+List<country*>* getCountriesFromFile(string adressDB) {
+	ifstream fin(adressDB);
+	List<country*> *countries = getList<country*>();
+	
+	country *next = NULL;
+
+	while (enterCountryFromFile(next, fin)) {
+		countries->add(next);
+	}
+
+	fin.close();
+	return countries;
+}
+
+int main() {
+	SetConsoleCP(1251);
+	SetConsoleOutputCP(1251);
+	
+	string adressDB = "input.txt";
+
+	List<country*> *countryes = getCountriesFromFile(adressDB);
+
+	ListItem<country*> *cur = countryes->first();
+	while (cur->next) {
+		//cout << (cur->val->toString());
+		cur = cur->next;
+	}
+
+	printCommand();
+
+	bool exit = false;
+
+	while (true) {
+		switch (prompt<short int>("> ")) {
+		
+		case 1: 
+			add();
+			break;
+
+		case 2: 
+			printAll();
+			break;
+
+		case 3:
+			printByPopul();
+			break;
+
+		case 4:
+			printBySAndPolul();
+			break;
+
+		case 5: 
+			clearConsole();
+			break;
+
+		case 0: 
+			exit = true;
+			break; 
+
+		default:
+			cout << "Неправильная команда" << endl;
+			break;
+		}
+	
+		if (exit) break;
+		cout << endl;	
+	}
+	 
+	return 0;
+}
+
+void printCommand() {
+	cout << "Выберите команду: " << endl
+		<< "1. Добавить запись в файл" << endl
+		<< "2. Вывести все страны" << endl
+		<< "3. Вывести страны с населением от min до max" << endl
+		<< "4. Вывести страны с площей от min до max и населением боьше n" << endl
+		<< endl
+		<< "5. Очистить экран" << endl
+		<< "0. Выход" << endl << endl;
+}
+
+template <typename T>
+T prompt(const char label[]) { 
 	cout << label;
 
 	while (true) {
-		int val;
+		T val;
 		cin >> val;
 
 		if (cin.fail()) {
@@ -50,6 +190,74 @@ int getNumber(const char label[]) {
 
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <windows.h>
+
+using namespace std;
+
 void printLine(char symbol = '-', short count = 20) {
 	for (int i = 0; i < count; i++) {
 		cout << symbol;
@@ -58,19 +266,7 @@ void printLine(char symbol = '-', short count = 20) {
 	cout << endl;
 }
 
-int askCommand() {
-	cout << "Выберите команду: " << endl 
-		<< "1. Добавить запись в файл" << endl
-		<< "2. Вывести все страны" << endl
-		<< "3. Вывести все странны отсотированными" << endl
-		<< "4. Вывести страны с населением от min до max" << endl
-		<< "5. Вывести страны с площей от min до max и населением боьше n" << endl
-		<< endl
-		<< "6. Очистить экран" << endl
-		<< "0. Выход" << endl << endl;
 
-	return getNumber("> ") - 1;
-}
 
 
 int main() {
@@ -104,20 +300,6 @@ int main() {
 #include <windows.h>
 
 using namespace std;
-
-struct country {
-	string name;
-	string capital;
-	long long population;
-	int S;
-
-	void print() {
-		cout << name << "("
-			<< "столица: " << capital
-			<< "; население: " << population
-			<< "; площадь: " << S << " кв. км)" << endl;
-	}
-};
 
 void writeCountry(country *countries, int len, ifstream &fin);
 void printCountry(country *countries, int len);
