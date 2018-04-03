@@ -5,6 +5,7 @@
 #include <windows.h>
 
 using namespace std;
+
 //Эллемент однонаправленного списка
 template <typename T>
 struct ListItem {
@@ -19,29 +20,45 @@ struct List {
 
 	//Добавляет элемента в конец списка
 	void push(T n) {
-		end = end->next = new ListItem<T>;
-		end->val = n;
+		ListItem<T> *item = new ListItem<T>;
+		item->val = n;
+		end->next = item;
+
+		end = item;
 	}
 
 	//Добавляет элемент после указанного элемента
-	void insertAfter(ListItem<T> *item, T n) {
-		ListItem<T> *added = new ListItem<T>;
-		added->val = n;
+	void insertAfter(ListItem<T> *prev, T n) {
+		ListItem<T> *item = new ListItem<T>;
+		item->val = n;
+		item->next = prev->next;
 
-		added->next = item->next;
-		item->next = added;
+		prev->next = item;
 	};
+
+	template<typename _Fn>
+	void forEach(_Fn func, ListItem<T> *cur = NULL) {
+		if (!cur) cur = first();
+
+		while (cur) {
+			bool answer = func(cur);
+			if (!answer) return;
+
+			cur = cur->next;
+		}
+	}
 
 	//Возвращает ссылку на первый реальный элемент
 	ListItem<T>* first() {
-		return head->next->next;
+		return head->next;
 	}
 
 	//Иницилизирует список
 	List* init() {
 		head = new ListItem<T>;
-		end = new ListItem<T>;
-		head->next = end;
+		head->next = NULL;
+
+		end = head;
 
 		return this;
 	}
@@ -84,14 +101,14 @@ void insertSortToList(List<country*> *countries, country *next) {
 
 void printHeader() {
 	cout << "+-----------------+-----------------+-----------------+-----------------+" << endl
-		 << "| Страна          | Столица         | Население       | Площадь         |" << endl
-		 << "+=================+=================+=================+=================+" << endl;
+		<< "| Страна          | Столица         | Население       | Площадь         |" << endl
+		<< "+=================+=================+=================+=================+" << endl;
 }
 
 void printCountry(country *c) {
-	cout << "| " << setw(15) << c->name
-		<< " | " << setw(15) << c->capital 
-		<< " | " << setw(15) << c->population 
+	cout << left << "| " << setw(15) << c->name
+		<< " | " << setw(15) << c->capital
+		<< " | " << setw(15) << c->population
 		<< " | " << setw(15) << c->S << " |" << endl;
 	cout << "+-----------------+-----------------+-----------------+-----------------+" << endl;
 }
@@ -119,12 +136,10 @@ void printAll(List<country*>* countries) {
 	cout << "Все страны: " << endl;
 	printHeader();
 
-	ListItem<country*> *cur = countries->first();
-
-	while (cur) {
-		printCountry(cur->val);
-		cur = cur->next;
-	}
+	countries->forEach([](auto *item) -> bool {
+		printCountry(item->val);
+		return true;
+	});
 }
 
 void printByPopul(List<country*> *countries) {
@@ -134,19 +149,17 @@ void printByPopul(List<country*> *countries) {
 		max = prompt<long long>("До: ");
 
 	if (min > max) swap(min, max);
-
-	ListItem<country*> *cur = countries->first();
-
 	printHeader();
-	while (cur) {
-		long long popul = cur->val->population;
+
+	countries->forEach([min, max](auto *item) -> bool {
+		long long popul = item->val->population;
 
 		if (popul >= min && popul <= max) {
-			printCountry(cur->val);
+			printCountry(item->val);
 		}
 
-		cur = cur->next;
-	}
+		return true;
+	});
 }
 
 void printBySAndPolul(List<country*> *countries) {
@@ -155,19 +168,17 @@ void printBySAndPolul(List<country*> *countries) {
 	int maxS = prompt<int>("До: ");
 
 	if (minS > maxS) swap(minS, maxS);
-
-	ListItem<country*> *cur = countries->first();
-
 	printHeader();
-	while (cur) {
-		int S = cur->val->S;
 
-		if (S >= minS && S <= maxS && cur->val->population >= popul) {
-			printCountry(cur->val);
+	countries->forEach([popul, minS, maxS](auto *item) -> bool {
+		int S = item->val->S;
+
+		if (S >= minS && S <= maxS && item->val->population >= popul) {
+			printCountry(item->val);
 		}
 
-		cur = cur->next;
-	}
+		return true;
+	});
 }
 
 void clearConsole() {
@@ -213,15 +224,10 @@ int main() {
 	SetConsoleCP(1251);
 	SetConsoleOutputCP(1251);
 
-	cout << left;
-
 	string adressDB = "input.txt";
-
-	List<country*> *countries = getCountriesFromFile(adressDB);
+	auto *countries = getCountriesFromFile(adressDB);
 
 	printCommand();
-
-	bool exit = false;
 
 	while (true) {
 		switch (prompt<short int>("> ")) {
@@ -247,7 +253,7 @@ int main() {
 			break;
 
 		case 0:
-			exit = true;
+			return 0;
 			break;
 
 		default:
@@ -255,7 +261,6 @@ int main() {
 			break;
 		}
 
-		if (exit) break;
 		cout << endl;
 	}
 
@@ -304,129 +309,3 @@ T prompt(const char label[]) {
 	}
 
 }
-
-
-
-
-
-
-
-/*#include <iostream>
-#include <fstream>
-#include <string>
-#include <windows.h>
-
-using namespace std;
-
-void writeCountry(country *countries, int len, ifstream &fin);
-void printCountry(country *countries, int len);
-
-void quickSort(country *arr, int l, int r);
-void printLine(char symbol = '-', short count = 50);
-
-int main() {
-SetConsoleCP(1251);
-SetConsoleOutputCP(1251);
-
-ifstream fin("input.txt");
-
-int len = 0; //Количество стран, хранящихся в файле
-fin >> len;
-
-country *countries = new country[len];
-writeCountry(countries, len, fin);
-fin.close();
-
-long long min, max, tmp;
-
-// - - -
-cout << endl << "Все страны в алфавитном порядке: " << endl;
-
-printLine();
-
-quickSort(countries, 0, len - 1);
-printCountry(countries, len);
-
-printLine();
-
-// - - -
-cout << endl << "Страны, с наcелением от: "; cin >> min;
-cout << "До: "; cin >> max;
-
-printLine();
-
-for (int i = 0; i < len; i++) {
-country item = countries[i];
-
-if (item.population >= min && item.population <= max) {
-countries[i].print();
-}
-}
-
-printLine();
-
-// - - -
-cout << endl << "Страны, с населением больше: "; cin >> tmp;
-cout << "И площей от: "; cin >> min;
-cout << "До: "; cin >> max;
-
-printLine();
-
-for (int i = 0; i < len; i++) {
-country item = countries[i];
-
-if (item.population > tmp && item.S >= min && item.S <= max) {
-countries[i].print();
-}
-}
-
-printLine();
-
-system("pause");
-return 0;
-}
-
-void writeCountry(country *countries, int len, ifstream &fin) {
-for (int i = 0; i < len; i++) {
-countries[i] = {};
-
-fin >> countries[i].name;
-fin >> countries[i].capital;
-fin >> countries[i].population;
-fin >> countries[i].S;
-}
-}
-
-void printCountry(country *countries, int len) {
-for (int i = 0; i < len; i++) {
-countries[i].print();
-}
-}
-
-void printLine(char symbol, short count) {
-for (int i = 0; i < count; i++) {
-cout << symbol;
-}
-
-cout << endl;
-}
-
-void quickSort(country *arr, int l, int r) {
-int i = l, j = r;
-string middle = arr[(i + j) / 2].name;
-
-do {
-while (middle > arr[i].name) i++;
-while (middle < arr[j].name) j--;
-
-if (i <= j) {
-swap(arr[i], arr[j]);
-i++; j--;
-}
-
-} while (i < j);
-
-if (i < r) quickSort(arr, i, r);
-if (j > l) quickSort(arr, l, j);
-}
-*/
