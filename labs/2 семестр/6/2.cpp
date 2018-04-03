@@ -1,4 +1,5 @@
 #include <iostream>
+#include <iomanip>
 #include <fstream>
 #include <string>
 #include <windows.h>
@@ -73,46 +74,100 @@ T prompt(const char label[] = "Введите значение: ");
 
 void printCommand();
 
-void add() {
-	cout << "add\n";
+//Вставляет элемент списка в список 
+//После первого элемента, что меньше этого
+//(елси для добавления использовать только 
+//эту функцию, то элементы будут отсортированы)
+void insertSortToList(List<country*> *countries, country *next) {
+	countries->push(next);
+}
+
+void printHeader() {
+	cout << "+-----------------+-----------------+-----------------+-----------------+" << endl
+		 << "| Страна          | Столица         | Население       | Площадь         |" << endl
+		 << "+=================+=================+=================+=================+" << endl;
+}
+
+void printCountry(country *c) {
+	cout << "| " << setw(15) << c->name
+		<< " | " << setw(15) << c->capital 
+		<< " | " << setw(15) << c->population 
+		<< " | " << setw(15) << c->S << " |" << endl;
+	cout << "+-----------------+-----------------+-----------------+-----------------+" << endl;
+}
+
+void add(List<country*>* countries, string adressDB) {
+	country *added = new country;
+
+	added->name = prompt<string>("Имя: ");
+	added->capital = prompt<string>("Столица: ");
+	added->population = prompt<long long>("Население: ");
+	added->S = prompt<int>("Площадь: ");
+
+	insertSortToList(countries, added);
+
+	ofstream fout(adressDB, ios_base::app);
+	fout << endl <<
+		added->name << ' ' <<
+		added->capital << ' ' <<
+		added->population << ' ' <<
+		added->S;
+	fout.close();
 }
 
 void printAll(List<country*>* countries) {
+	cout << "Все страны: " << endl;
+	printHeader();
+
 	ListItem<country*> *cur = countries->first();
 
 	while (cur) {
-		cout << (cur->val->toString());
+		printCountry(cur->val);
 		cur = cur->next;
 	}
 }
 
-void printByPopul(List<country*>* countries) {
+void printByPopul(List<country*> *countries) {
 	cout << "Страны с населением" << endl;
 
-	long long min = 1, max = 0;
-
-	while (min > max) {
-		min = prompt<long long>("От: ");
+	long long min = prompt<long long>("От: "),
 		max = prompt<long long>("До: ");
 
-		if (min > max) cout << "min должно быть <= max. Попробуйте еще раз" << endl;
-	}
+	if (min > max) swap(min, max);
 
 	ListItem<country*> *cur = countries->first();
 
+	printHeader();
 	while (cur) {
 		long long popul = cur->val->population;
-		
+
 		if (popul >= min && popul <= max) {
-			cout << (cur->val->toString());
+			printCountry(cur->val);
 		}
-		
+
 		cur = cur->next;
 	}
 }
 
-void printBySAndPolul() {
-	cout << "bySAndPopul\n";
+void printBySAndPolul(List<country*> *countries) {
+	long long popul = prompt<long long>("Страны с населением больше: ");
+	int minS = prompt<int>("И площей от: ");
+	int maxS = prompt<int>("До: ");
+
+	if (minS > maxS) swap(minS, maxS);
+
+	ListItem<country*> *cur = countries->first();
+
+	printHeader();
+	while (cur) {
+		int S = cur->val->S;
+
+		if (S >= minS && S <= maxS && cur->val->population >= popul) {
+			printCountry(cur->val);
+		}
+
+		cur = cur->next;
+	}
 }
 
 void clearConsole() {
@@ -134,14 +189,6 @@ bool enterCountryFromFile(country *&item, ifstream &fin) {
 		>> item->population
 		>> item->S
 		);
-}
-
-//Вставляет элемент списка в список 
-//После первого элемента, что меньше этого
-//(елси для добавления использовать только 
-//эту функцию, то элементы будут отсортированы)
-void insertSortToList(List<country*> *countries, country *next) {
-	countries->push(next);
 }
 
 /**
@@ -166,6 +213,8 @@ int main() {
 	SetConsoleCP(1251);
 	SetConsoleOutputCP(1251);
 
+	cout << left;
+
 	string adressDB = "input.txt";
 
 	List<country*> *countries = getCountriesFromFile(adressDB);
@@ -178,7 +227,7 @@ int main() {
 		switch (prompt<short int>("> ")) {
 
 		case 1:
-			add();
+			add(countries, adressDB);
 			break;
 
 		case 2:
@@ -190,7 +239,7 @@ int main() {
 			break;
 
 		case 4:
-			printBySAndPolul();
+			printBySAndPolul(countries);
 			break;
 
 		case 5:
@@ -216,10 +265,10 @@ int main() {
 //Выводит в консоль список команд
 void printCommand() {
 	cout << "Выберите команду: " << endl
-		<< "1. Добавить запись в файл" << endl
+		<< "1. Добавить страну" << endl
 		<< "2. Вывести все страны" << endl
 		<< "3. Вывести страны с населением от min до max" << endl
-		<< "4. Вывести страны с площей от min до max и населением боьше n" << endl
+		<< "4. Вывести страны с площей от min до max и населением больше n" << endl
 		<< endl
 		<< "5. Очистить экран" << endl
 		<< "0. Выход" << endl << endl;
