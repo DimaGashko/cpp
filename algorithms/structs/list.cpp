@@ -31,12 +31,13 @@ struct List {
 
 	//Возвращает ссылку на первый реальный элемент
 	ListItem<T>* first() {
-		return head->next;
+		return head->next->next;
 	}
 
 	//Иницилизирует список
 	List* init() {
-		end = (head = new ListItem<T>);
+		head = new ListItem<T>;
+		end = new ListItem<T>;
 		head->next = end;
 
 		return this;
@@ -53,15 +54,14 @@ List<T>* getList() {
 
 int main() {
 	List<int> *list = getList<int>();
-	  
+
+	int arr[] = { 50, 24, 60, 68, 1, 0, 54, 98, 1, 2 };
 	for (int i = 1; i <= 10; i++) {
 		list->push(i * 10);
-		cout << list->end->val << " ";
 	}
-	cout << endl;
 
-	list->insertAfter(list->first()->next->next->next->next, 55);
-
+	list->insertAfter(list->first(), 55);
+	
 	ListItem<int> *cur = list->first();
 	while (cur) {
 		cout << cur->val << " ";
