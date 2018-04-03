@@ -4,7 +4,6 @@
 #include <windows.h>
 
 using namespace std;
-
 //Эллемент однонаправленного списка
 template <typename T>
 struct ListItem {
@@ -34,12 +33,13 @@ struct List {
 
 	//Возвращает ссылку на первый реальный элемент
 	ListItem<T>* first() {
-		return head->next;
+		return head->next->next;
 	}
 
 	//Иницилизирует список
 	List* init() {
-		end = (head = new ListItem<T>);
+		head = new ListItem<T>;
+		end = new ListItem<T>;
 		head->next = end;
 
 		return this;
@@ -86,8 +86,29 @@ void printAll(List<country*>* countries) {
 	}
 }
 
-void printByPopul() {
-	cout << "byPopul\n";
+void printByPopul(List<country*>* countries) {
+	cout << "Страны с населением" << endl;
+
+	long long min = 1, max = 0;
+
+	while (min > max) {
+		min = prompt<long long>("От: ");
+		max = prompt<long long>("До: ");
+
+		if (min > max) cout << "min должно быть <= max. Попробуйте еще раз" << endl;
+	}
+
+	ListItem<country*> *cur = countries->first();
+
+	while (cur) {
+		long long popul = cur->val->population;
+		
+		if (popul >= min && popul <= max) {
+			cout << (cur->val->toString());
+		}
+		
+		cur = cur->next;
+	}
 }
 
 void printBySAndPolul() {
@@ -121,23 +142,6 @@ bool enterCountryFromFile(country *&item, ifstream &fin) {
 //эту функцию, то элементы будут отсортированы)
 void insertSortToList(List<country*> *countries, country *next) {
 	countries->push(next);
-
-	/*ListItem<country*> *cur = countries->head;			
-
-	if (cur->next) {
-		while (cur) {
-			cout << (cur->val) << endl;
-			if ((next->name) > (cur->val->name)) {
-				countries->insertAfter(cur, next);
-				break;
-			}
-
-			cur = cur->next;
-		}
-	}
-	else {
-		countries->push(next);
-	}*/		
 }
 
 /**
@@ -182,7 +186,7 @@ int main() {
 			break;
 
 		case 3:
-			printByPopul();
+			printByPopul(countries);
 			break;
 
 		case 4:
@@ -220,39 +224,6 @@ void printCommand() {
 		<< "5. Очистить экран" << endl
 		<< "0. Выход" << endl << endl;
 }
-
-
-/**
-* Запрашивает от пользователя значение нужного типа
-* @param{char[]} label - текст, предложенный пользователю
-*
-* Привет работы:
-* prompt<int>("Введите целое число: ");
-* prompt<char>("Введите символ: ");
-* prompt<string>("Введите строку: ");
-*/
-template <typename T>
-T prompt(const char label[]) {
-	cout << label;
-
-	while (true) {
-		T val;
-		cin >> val;
-
-		if (cin.fail()) {
-			cin.clear();
-			cin.ignore(32767, '\n');
-			cout << "Произошла ошибка. Введите еще раз: ";
-		}
-		else {
-			cin.ignore(32767, '\n');
-			return val;
-		}
-
-	}
-
-}
-
 
 /**
 * Запрашивает от пользователя значение нужного типа
@@ -305,108 +276,108 @@ void quickSort(country *arr, int l, int r);
 void printLine(char symbol = '-', short count = 50);
 
 int main() {
-	SetConsoleCP(1251);
-	SetConsoleOutputCP(1251);
+SetConsoleCP(1251);
+SetConsoleOutputCP(1251);
 
-	ifstream fin("input.txt");
+ifstream fin("input.txt");
 
-	int len = 0; //Количество стран, хранящихся в файле
-	fin >> len;
+int len = 0; //Количество стран, хранящихся в файле
+fin >> len;
 
-	country *countries = new country[len];
-	writeCountry(countries, len, fin);
-	fin.close();
+country *countries = new country[len];
+writeCountry(countries, len, fin);
+fin.close();
 
-	long long min, max, tmp;
+long long min, max, tmp;
 
-	// - - - 
-	cout << endl << "Все страны в алфавитном порядке: " << endl;
+// - - -
+cout << endl << "Все страны в алфавитном порядке: " << endl;
 
-	printLine();
+printLine();
 
-	quickSort(countries, 0, len - 1);
-	printCountry(countries, len);
+quickSort(countries, 0, len - 1);
+printCountry(countries, len);
 
-	printLine();
+printLine();
 
-	// - - -
-	cout << endl << "Страны, с наcелением от: "; cin >> min;
-	cout << "До: "; cin >> max;
+// - - -
+cout << endl << "Страны, с наcелением от: "; cin >> min;
+cout << "До: "; cin >> max;
 
-	printLine();
+printLine();
 
-	for (int i = 0; i < len; i++) {
-		country item = countries[i];
+for (int i = 0; i < len; i++) {
+country item = countries[i];
 
-		if (item.population >= min && item.population <= max) {
-			countries[i].print();
-		}
-	}
+if (item.population >= min && item.population <= max) {
+countries[i].print();
+}
+}
 
-	printLine();
+printLine();
 
-	// - - -
-	cout << endl << "Страны, с населением больше: "; cin >> tmp;
-	cout << "И площей от: "; cin >> min;
-	cout << "До: "; cin >> max;
+// - - -
+cout << endl << "Страны, с населением больше: "; cin >> tmp;
+cout << "И площей от: "; cin >> min;
+cout << "До: "; cin >> max;
 
-	printLine();
+printLine();
 
-	for (int i = 0; i < len; i++) {
-		country item = countries[i];
+for (int i = 0; i < len; i++) {
+country item = countries[i];
 
-		if (item.population > tmp && item.S >= min && item.S <= max) {
-			countries[i].print();
-		}
-	}
+if (item.population > tmp && item.S >= min && item.S <= max) {
+countries[i].print();
+}
+}
 
-	printLine();
+printLine();
 
-	system("pause");
-	return 0;
+system("pause");
+return 0;
 }
 
 void writeCountry(country *countries, int len, ifstream &fin) {
-	for (int i = 0; i < len; i++) {
-		countries[i] = {};
+for (int i = 0; i < len; i++) {
+countries[i] = {};
 
-		fin >> countries[i].name;
-		fin >> countries[i].capital;
-		fin >> countries[i].population;
-		fin >> countries[i].S;
-	}
+fin >> countries[i].name;
+fin >> countries[i].capital;
+fin >> countries[i].population;
+fin >> countries[i].S;
+}
 }
 
 void printCountry(country *countries, int len) {
-	for (int i = 0; i < len; i++) {
-		countries[i].print();
-	}
+for (int i = 0; i < len; i++) {
+countries[i].print();
+}
 }
 
 void printLine(char symbol, short count) {
-	for (int i = 0; i < count; i++) {
-		cout << symbol;
-	}
+for (int i = 0; i < count; i++) {
+cout << symbol;
+}
 
-	cout << endl;
+cout << endl;
 }
 
 void quickSort(country *arr, int l, int r) {
-	int i = l, j = r;
-	string middle = arr[(i + j) / 2].name;
+int i = l, j = r;
+string middle = arr[(i + j) / 2].name;
 
-	do {
-		while (middle > arr[i].name) i++;
-		while (middle < arr[j].name) j--;
+do {
+while (middle > arr[i].name) i++;
+while (middle < arr[j].name) j--;
 
-		if (i <= j) {
-			swap(arr[i], arr[j]);
-			i++; j--;
-		}
+if (i <= j) {
+swap(arr[i], arr[j]);
+i++; j--;
+}
 
-	} while (i < j);
+} while (i < j);
 
-	if (i < r) quickSort(arr, i, r);
-	if (j > l) quickSort(arr, l, j);
+if (i < r) quickSort(arr, i, r);
+if (j > l) quickSort(arr, l, j);
 }
 */
