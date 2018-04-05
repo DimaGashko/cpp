@@ -77,13 +77,6 @@ struct country {
 	string capital;
 	long long population;
 	int S;
-
-	string toString() {
-		return name + "("
-			+ "столица: " + capital
-			+ "; население: " + to_string(population)
-			+ "; площадь: " + to_string(S) + " кв. км)\n";
-	}
 };
 
 template <typename T>
@@ -96,13 +89,25 @@ void printCommand();
 //(елси для добавления использовать только 
 //эту функцию, то элементы будут отсортированы)
 void insertSortToList(List<country*> *countries, country *next) {
-	countries->push(next);
+	if (!countries->first()) {
+		countries->push(next);
+	}
+	else {
+		countries->forEach([&countries, &next](auto *item) -> bool {
+			if (!item->next || item->next->val->name > next->name) {
+				countries->insertAfter(item, next);
+				return false;
+			}
+
+			return true;
+		}, countries->head);
+	}
 }
 
 void printHeader() {
 	cout << "+-----------------+-----------------+-----------------+-----------------+" << endl
-		<< "| Страна          | Столица         | Население       | Площадь         |" << endl
-		<< "+=================+=================+=================+=================+" << endl;
+	  	 << "| Страна          | Столица         | Население       | Площадь         |" << endl
+ 		 << "+=================+=================+=================+=================+" << endl;
 }
 
 void printCountry(country *c) {
@@ -233,19 +238,19 @@ int main() {
 		switch (prompt<short int>("> ")) {
 
 		case 1:
-			add(countries, adressDB);
-			break;
-
-		case 2:
 			printAll(countries);
 			break;
 
-		case 3:
+		case 2:
 			printByPopul(countries);
 			break;
 
-		case 4:
+		case 3:
 			printBySAndPolul(countries);
+			break;
+
+		case 4:
+			add(countries, adressDB);
 			break;
 
 		case 5:
@@ -270,10 +275,10 @@ int main() {
 //Выводит в консоль список команд
 void printCommand() {
 	cout << "Выберите команду: " << endl
-		<< "1. Добавить страну" << endl
-		<< "2. Вывести все страны" << endl
-		<< "3. Вывести страны с населением от min до max" << endl
-		<< "4. Вывести страны с площей от min до max и населением больше n" << endl
+		<< "1. Вывести все страны" << endl
+		<< "2. Вывести страны с населением от min до max" << endl
+		<< "3. Вывести страны с площей от min до max и населением больше n" << endl
+		<< "4. Добавить страну" << endl
 		<< endl
 		<< "5. Очистить экран" << endl
 		<< "0. Выход" << endl << endl;
