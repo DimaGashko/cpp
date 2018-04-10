@@ -204,5 +204,9 @@ void clearConsole() {
 	printCommand();
 }
 
+void exit() {
+	cout << "Завершение программы...";
+}
+
 
 #endif //FUNCTIONS_H

@@ -11,8 +11,6 @@ using namespace std;
 
 //#define IS_DEV
 
-void printCommand();
-
 int main() {
 	SetConsoleCP(1251);
 	SetConsoleOutputCP(1251);
@@ -31,7 +29,12 @@ int main() {
 		else if (n == 4) add(countries, adressDB);
 
 		else if (n == 5) clearConsole();
-		else if (n == 0) return 0;
+
+		else if (n == 0) {
+			exit();
+			break;
+		}
+
 		else cout << "Неправильная команда" << endl;
 
 		cout << endl;
