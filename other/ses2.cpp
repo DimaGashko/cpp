@@ -11,19 +11,33 @@ void writeArr(int *arr, int len);
 
 void bubleSort(int *arr, int len);
 void selectSort(int *arr, int len);
+void insertionSort(int *arr, int len);
 
 int main() {
-	int n = 10;
-	int *a = new int[n];
+	int len = 10;
+	int *arr = new int[len];
 
-	writeArr(a, n);	
-	selectSort(a, n);
-	printArr(a, n);
+	writeArr(arr, len);
+	insertionSort(arr, len);
+	printArr(arr, len);
+
+	delete[] arr;
 
 	fin.close();
 	fout.close();
 
 	return 0;
+}
+
+void insertionSort(int *arr, int len) {
+	for (int i = 1; i < len; i++) {
+		for (int j = i; j >= 1; j--) {
+			if (arr[j - 1] > arr[j]) {
+				swap(arr[j], arr[j - 1]);
+			}
+		}
+
+	}
 }
 
 void selectSort(int *arr, int len) {

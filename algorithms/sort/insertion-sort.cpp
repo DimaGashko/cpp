@@ -32,7 +32,7 @@ int main() {
 	fout.close();
 
 	delete[] arr;
-	return 0;
+	зreturn 0;
 }
 
 void sort(int *arr, int n) {
