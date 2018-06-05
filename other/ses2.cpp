@@ -1,5 +1,7 @@
 #include <iostream> 
 #include <fstream> 
+#include <cmath> 
+#include <ctime> 
 
 using namespace std;
 
@@ -14,10 +16,14 @@ void selectSort(int *arr, int len);
 void insertionSort(int *arr, int len);
 
 int main() {
+	srand(time(0));
+
 	int len = 10;
 	int *arr = new int[len];
 
 	writeArr(arr, len);
+	printArr(arr, len);
+
 	insertionSort(arr, len);
 	printArr(arr, len);
 
@@ -73,6 +79,6 @@ void printArr(int *arr, int len) {
 
 void writeArr(int *arr, int len) {
 	for (int i = 0; i < len; i++) {
-		fin >> arr[i];
+		arr[i] = 10 + (rand() % 89);
 	}
 }
