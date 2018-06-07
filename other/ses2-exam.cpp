@@ -32,18 +32,18 @@ int main() {
 
 	writeArrRand(arr, k, l);
 
-	fout << "Созданный массив: " << endl;
+	fout << "РЎРѕР·РґР°РЅРЅС‹Р№ РјР°СЃСЃРёРІ: " << endl;
 	printArr(arr, k, l, fout);
 	//printArr(arr, k, l, cout);
 
 	int indexMax = findMaxCol(arr, k, l);
 	fout << endl 
-		<< "Индекс столбца, содержащий максимальный элемент: "
+		<< "РРЅРґРµРєСЃ СЃС‚РѕР»Р±С†Р°, СЃРѕРґРµСЂР¶Р°С‰РёР№ РјР°РєСЃРёРјР°Р»СЊРЅС‹Р№ СЌР»РµРјРµРЅС‚: "
 		<< indexMax << endl << endl;
 
 	arr = addColAfter(arr, k, l, indexMax);
 
-	fout << "Массив после добавления столбца: " << endl;
+	fout << "РњР°СЃСЃРёРІ РїРѕСЃР»Рµ РґРѕР±Р°РІР»РµРЅРёСЏ СЃС‚РѕР»Р±С†Р°: " << endl;
 	printArr(arr, k, l, fout);
 
 	deleteArr(arr, k);
@@ -52,8 +52,8 @@ int main() {
 	return 0;
 }
 
-//Добавляет столбец в двумерный массив после указанного столбца
-//Новые элементы заполняет нулями
+//Р”РѕР±Р°РІР»СЏРµС‚ СЃС‚РѕР»Р±РµС† РІ РґРІСѓРјРµСЂРЅС‹Р№ РјР°СЃСЃРёРІ РїРѕСЃР»Рµ СѓРєР°Р·Р°РЅРЅРѕРіРѕ СЃС‚РѕР»Р±С†Р°
+//РќРѕРІС‹Рµ СЌР»РµРјРµРЅС‚С‹ Р·Р°РїРѕР»РЅСЏРµС‚ РЅСѓР»СЏРјРё
 template <typename T>
 T ** addColAfter(T **arr, int k, int &l, int index) {
 	T **newArr = createArr<T>(k, l + 1);
@@ -77,8 +77,8 @@ T ** addColAfter(T **arr, int k, int &l, int index) {
 	return newArr;
 }
 
-//Создает и возврщает двумерный массив
-//Использование: int arr** = createArr<int>(k, l)
+//РЎРѕР·РґР°РµС‚ Рё РІРѕР·РІСЂС‰Р°РµС‚ РґРІСѓРјРµСЂРЅС‹Р№ РјР°СЃСЃРёРІ
+//РСЃРїРѕР»СЊР·РѕРІР°РЅРёРµ: int arr** = createArr<int>(k, l)
 template <typename T>
 T ** createArr(int k, int l) {
 	T **arr = new T* [k];
@@ -100,7 +100,7 @@ void deleteArr(T **arr, int k) {
 	delete[] arr;
 }
 
-//Заполняет массив случайными числами
+//Р—Р°РїРѕР»РЅСЏРµС‚ РјР°СЃСЃРёРІ СЃР»СѓС‡Р°Р№РЅС‹РјРё С‡РёСЃР»Р°РјРё
 template <typename T>
 void writeArrRand(T **arr, int k, int l) {
 	for (int i = 0; i < k; i++) {
@@ -110,7 +110,7 @@ void writeArrRand(T **arr, int k, int l) {
 	}
 }
 
-//Выводит массив на поток вывода (fout, cout...)
+//Р’С‹РІРѕРґРёС‚ РјР°СЃСЃРёРІ РЅР° РїРѕС‚РѕРє РІС‹РІРѕРґР° (fout, cout...)
 template <typename T>
 void printArr(T **arr, int k, int l, ostream &out) {
 	for (int i = 0; i < k; i++) {
@@ -122,9 +122,9 @@ void printArr(T **arr, int k, int l, ostream &out) {
 	}
 }
 
-//Находит индек столбца, содержащий максимальный элемент
-//Если максимальные элементы есть в нескольких строках,
-//То выбран будет первый справа
+//РќР°С…РѕРґРёС‚ РёРЅРґРµРє СЃС‚РѕР»Р±С†Р°, СЃРѕРґРµСЂР¶Р°С‰РёР№ РјР°РєСЃРёРјР°Р»СЊРЅС‹Р№ СЌР»РµРјРµРЅС‚
+//Р•СЃР»Рё РјР°РєСЃРёРјР°Р»СЊРЅС‹Рµ СЌР»РµРјРµРЅС‚С‹ РµСЃС‚СЊ РІ РЅРµСЃРєРѕР»СЊРєРёС… СЃС‚СЂРѕРєР°С…,
+//РўРѕ РІС‹Р±СЂР°РЅ Р±СѓРґРµС‚ РїРµСЂРІС‹Р№ СЃРїСЂР°РІР°
 template <typename T>
 int findMaxCol(T **arr, int k, int l) {
 	int jMax = 0, max = arr[0][0];
