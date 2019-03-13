@@ -1,26 +1,46 @@
 #include <iostream>
 #include <string>
+#include <stack>
 #include <map>
 
 using namespace std;
 
-int main() {
-	string str;
-	cin >> str;
+map<char, char> coBrackets { 
+	{'(', ')'},
+	{'[', ']'},
+	{'{', '}'},
+};
 
-	int b1 = 0;
-	int b2 = 0;
+bool validate(string str) {
+	stack<char> seq;
 
 	for (auto& c : str) {
-		if (c == '(') b1++;
-		else if (c == ')') b1--;
+		if (c == '(' || c == '[' || c == '{') {
+			seq.push(c);
+		}
 
-		if (c == '[') b1++;
-		else if (c == ']') b1--;
+		else if (c == ')' || c == ']' || c == '}') {
+			if (seq.empty()) return 0;
+			if (coBrackets[seq.top()] != c) return 0;
+			seq.pop();
+		}
 	}
 
-	cout << ((b1 == 0 && b2 == 0) ? "Yes" : "No") << endl;
+	return seq.empty();
+}
 
+int main() {
+	string str;
+	int t;
+	cin >> t;
+
+	getline(cin, str);
+
+	for (int i = 0; i < t; i++) {
+		getline(cin, str);
+		cout << (validate(str) ? "Yes" : "No") << endl;
+	}
+	
 	system("pause");
 	return 0;
 }
