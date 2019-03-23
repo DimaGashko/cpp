@@ -1,28 +1,33 @@
 #include <iostream>
-#include <cmath>
-#include <map>
+#include <algorithm>
+#include <vector>
 
 using namespace std;
 
-int getMinMatches(int n) {
-	int a = (int)sqrt(n);
-	n -= a * a;
-
-	int res = 2 * a * (a + 1);
-	if (n == 0) return res;
-
-	int ones = (n > a) ? 2 : 1;
-	res += (n - ones) * 2 + ones * 3;
-
-	return res;
-}
-
 int main() {
-	int n;
-	cin >> n;
+	int n, prev, next, len = 1;
+	cin >> n >> prev;
 
-	cout << getMinMatches(n) << endl;
-	
+	vector<int> max{ 1 };
+
+	for (int i = 1; i < n; i++) {
+		cin >> next;
+
+		if (prev + 1 == next) {
+			len++;
+			max.push_back(len);
+		}
+		else {
+			max.push_back(len);
+			len = 1;
+		}
+
+		prev = next;
+	}
+
+	sort(max.begin(), max.end());
+	cout << max.back() << endl;
+
 	system("pause");
 	return 0;
 }
